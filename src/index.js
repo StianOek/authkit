@@ -2,6 +2,9 @@ import express from "express";
 import { config } from "dotenv";
 import { connectDB, disconnectDB } from "./config/db.js";
 
+// auth import
+import authRouter from "../src/routes/authRoutes.js";
+
 config();
 connectDB();
 
@@ -9,9 +12,7 @@ const app = express();
 
 const PORT = "8000";
 
-app.get("/", (req, res) => {
-  res.json({ message: "Hello world" });
-});
+app.use("/auth", authRouter);
 
 const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
