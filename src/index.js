@@ -10,12 +10,14 @@ connectDB();
 
 const app = express();
 
-const PORT = "8000";
+// parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/auth", authRouter);
 
-const server = app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+const server = app.listen(process.env.PORT, () => {
+  console.log(`Server running on http://localhost:${process.env.PORT}`);
 });
 
 // Håndtere avvist promise ( eksempel: database tilkobling)
