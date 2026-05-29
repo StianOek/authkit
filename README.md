@@ -1,4 +1,4 @@
-````md
+
 # Authentication Kit – Sikkert og enkelt
 
 Et enkelt og moderne autentiserings-kit bygget med:
@@ -32,7 +32,7 @@ Dette prosjektet inkluderer:
 
 ```bash
 npm install
-````
+```
 
 ---
 
