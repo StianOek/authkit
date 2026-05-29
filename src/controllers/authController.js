@@ -1,6 +1,6 @@
 import { prismaClient } from "../config/db.js";
 import { hashPassword, verifyPassword } from "../utils/password.js";
-
+import { generateToken } from "../utils/generateJWT.js";
 const signUp = async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -24,6 +24,9 @@ const signUp = async (req, res) => {
     },
   });
 
+  // Generere json web token
+  const token = generateToken(createUser.id, res);
+
   res.status(201).json({
     stauts: "success",
     data: {
@@ -32,6 +35,7 @@ const signUp = async (req, res) => {
         name: name,
         email: email,
       },
+      token,
     },
   });
 
@@ -56,6 +60,7 @@ const login = async (req, res) => {
   }
 
   // Generere json web token
+  const token = generateToken(userExists.id, res);
 
   res.status(201).json({
     stauts: "success",
@@ -64,8 +69,48 @@ const login = async (req, res) => {
         id: userExists.id,
         email: email,
       },
+      token,
     },
   });
 };
 
-export { signUp, login };
+const logout = async (req, res) => {
+  res.cookie("user_token", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+  res.status(200).json({
+    status: "success",
+    message: "Logged out successfully",
+  });
+};
+
+const getUser = async (req, res) => {
+  console.log("Checking if req user is defined", req.user);
+  try {
+    const user = await prismaClient.user.findUnique({
+      where: {
+        id: req.user.id,
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+      },
+    });
+    if (!user) {
+      return res.status(404).json({
+        error: "User not found",
+      });
+    }
+
+    res.json(user);
+  } catch (error) {
+    res.status(500).json({
+      error: "Server error",
+    });
+  }
+};
+
+export { signUp, login, logout, getUser };
